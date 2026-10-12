@@ -1,0 +1,36 @@
+SOC Home Lab — Ubuntu Server Installation
+
+1. Project Overview
+
+This project documents the setup of my Security Operations Center (SOC) home lab. Ubuntu Server is the first component of the lab and provides a Linux environment for practising server administration and cybersecurity skills.
+
+2. Why I Installed Ubuntu Server
+
+I installed Ubuntu Server 24.04.1 LTS in VMware Workstation Pro 17 to create a virtual Linux machine on my Windows laptop.
+
+As a Junior SOC Analyst, I need to understand how Linux servers operate, how to manage users and services, and how to access system logs. These skills are important when investigating security events and monitoring systems in a SOC environment.
+
+3. What I Did
+
+I created a virtual machine in VMware Workstation, selected the Ubuntu Server ISO image, and installed the operating system. During installation, I configured the server’s hostname, username, and password.
+
+I also enabled OpenSSH Server so that I could remotely access and administer the Ubuntu machine from my Windows host.
+
+4. My Understanding
+
+Ubuntu Server is a Linux operating system designed to run services and applications without requiring a graphical desktop. Running it as a virtual machine allows me to practise server administration in an isolated lab without installing Linux directly on my laptop.
+
+SSH provides an encrypted connection for remote administration. This means I can manage the Ubuntu server from Windows using a terminal rather than interacting with the virtual machine console every time.
+
+5. Expected Learning Outcomes
+
+Understand the basic installation of Ubuntu Server.
+Learn how to configure a Linux server account.
+Understand the purpose of SSH and remote administration.
+Build a foundation for future Wazuh SIEM installation and security monitoring exercises.
+
+6. Project Status
+
+Completed: Ubuntu Server installation and initial account configuration.
+
+Next: Verify remote SSH access from Windows and continue building the SOC home lab.
