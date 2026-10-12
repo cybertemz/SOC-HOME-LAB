@@ -34,3 +34,32 @@ Build a foundation for future Wazuh SIEM installation and security monitoring ex
 Completed: Ubuntu Server installation and initial account configuration.
 
 Next: Verify remote SSH access from Windows and continue building the SOC home lab.
+
+
+
+Windows 10 Virtual Machine Setup
+
+Objective
+
+Create a Windows 10 virtual machine to serve as an endpoint in my SOC home lab.
+
+Environment
+
+Hypervisor: VMware Workstation Pro 17
+Guest operating system: Windows 10
+Virtual disk: Configured through the VMware New Virtual Machine Wizard
+
+Implementation
+
+Started the VMware New Virtual Machine Wizard.
+Configured the virtual disk capacity.
+Reviewed the virtual machine settings before creation.
+Started the virtual machine and verified that the Windows 10 desktop loaded successfully.
+
+Purpose
+
+The Windows virtual machine will be used for future Windows event log analysis, endpoint monitoring, and Wazuh SIEM integration.
+
+Status
+
+Windows 10 desktop startup verified.
