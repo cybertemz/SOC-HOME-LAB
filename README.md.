@@ -126,3 +126,67 @@ Understood the importance of monitoring remote access activity in a SOC environm
 6. Project Status
 Completed: Windows network configuration and Remote Desktop connection initiation.
 Pending verification: Confirm that the remote desktop session successfully opens and that the target desktop can be controlled remotely.
+
+
+
+Wazuh SIEM Installation and Dashboard
+
+1. Objective
+
+Install and access Wazuh to build a Security Operations Center (SOC) home lab for security monitoring, log analysis, and threat detection.
+
+2. What I Did
+
+Visited the official Wazuh website.
+Reviewed the Wazuh installation documentation.
+Accessed the Wazuh dashboard to inspect the security monitoring interface.
+
+3. My Understanding
+
+Wazuh is an open-source security platform that provides security monitoring, threat detection, log analysis, and endpoint security capabilities.
+
+4. Screenshots
+
+The screenshots below document my Wazuh setup process.
+
+Official Wazuh Website
+
+Wazuh Installation Guide
+
+Wazuh Dashboard
+
+5. Project Status
+
+Completed: Accessed the Wazuh dashboard.
+
+Next: Register a monitored endpoint, verify agent connectivity, and investigate security events.Wazuh SIEM Installation and Dashboard
+
+1. Objective
+
+Install and access Wazuh to build a Security Operations Center (SOC) home lab for security monitoring, log analysis, and threat detection.
+
+2. What I Did
+
+Visited the official Wazuh website.
+Reviewed the Wazuh installation documentation.
+Accessed the Wazuh dashboard to inspect the security monitoring interface.
+
+3. My Understanding
+
+Wazuh is an open-source security platform that provides security monitoring, threat detection, log analysis, and endpoint security capabilities.
+
+4. Screenshots
+
+The screenshots below document my Wazuh setup process.
+
+Official Wazuh Website
+
+Wazuh Installation Guide
+
+Wazuh Dashboard
+
+5. Project Status
+
+Completed: Accessed the Wazuh dashboard.
+
+Next: Register a monitored endpoint, verify agent connectivity, and investigate security events.
