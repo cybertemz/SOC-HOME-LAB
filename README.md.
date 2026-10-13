@@ -103,3 +103,26 @@ Established a foundation for future Linux administration and SOC monitoring exer
 7. Project Status
 Completed: SSH remote access from Windows PowerShell to Ubuntu Server successfully verified.
 Next: Install and configure Wazuh SIEM for security monitoring and log analysis.
+
+
+
+Windows Remote Desktop Access
+1. Objective
+The objective of this exercise was to understand how to establish remote access to a Windows computer using Remote Desktop Protocol (RDP). This helps me learn how administrators can manage Windows endpoints remotely in a SOC environment.
+2. Environment
+Host operating system: Windows 10
+Virtualization software: VMware Workstation Pro 17
+Remote access tool: Windows Remote Desktop Connection
+Target: Windows 10 virtual machine
+3. What I Did
+I checked the Windows network configuration using ipconfig to identify the machine’s IP address. I then opened Remote Desktop Connection and entered the target IP address. I proceeded to the Windows Security credentials prompt to authenticate the connection.
+4. My Understanding
+Remote Desktop Protocol (RDP) allows a user to access and control a Windows computer over a network. Authentication helps ensure that only authorized users can access the target system. In a SOC environment, remote access must be monitored because unauthorized access attempts can present a security risk.
+5. Learning Outcomes
+Learned how to inspect Windows network settings using ipconfig.
+Understood how to initiate a Remote Desktop connection.
+Learned the role of authentication in remote access.
+Understood the importance of monitoring remote access activity in a SOC environment.
+6. Project Status
+Completed: Windows network configuration and Remote Desktop connection initiation.
+Pending verification: Confirm that the remote desktop session successfully opens and that the target desktop can be controlled remotely.
