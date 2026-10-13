@@ -39,27 +39,36 @@ Next: Verify remote SSH access from Windows and continue building the SOC home l
 
 Windows 10 Virtual Machine Setup
 
-Objective
+7. Objective
 
 Create a Windows 10 virtual machine to serve as an endpoint in my SOC home lab.
 
-Environment
+8. Environment
 
 Hypervisor: VMware Workstation Pro 17
 Guest operating system: Windows 10
 Virtual disk: Configured through the VMware New Virtual Machine Wizard
 
-Implementation
+9. What I Did
 
-Started the VMware New Virtual Machine Wizard.
-Configured the virtual disk capacity.
-Reviewed the virtual machine settings before creation.
-Started the virtual machine and verified that the Windows 10 desktop loaded successfully.
+I started the VMware New Virtual Machine Wizard, configured the virtual disk capacity, reviewed the virtual machine settings, and started the virtual machine. I verified that the Windows 10 desktop loaded successfully.
 
-Purpose
+10. My Understanding
 
-The Windows virtual machine will be used for future Windows event log analysis, endpoint monitoring, and Wazuh SIEM integration.
+Windows 10 serves as an endpoint in my SOC home lab. An endpoint is a computer or device that can generate security-related events.
 
-Status
+Windows can record activities such as successful and failed login attempts, account changes, and application activity. These events can help a SOC analyst investigate suspicious activity.
 
-Windows 10 desktop startup verified.
+I created this virtual machine to provide a controlled environment for learning how Windows endpoint activity can be monitored and investigated.
+
+11. Learning Outcomes
+
+Learned how to create a Windows 10 virtual machine using VMware Workstation Pro 17.
+Understood the role of Windows as an endpoint in a SOC environment.
+Established a foundation for future endpoint monitoring and security investigation exercises.
+
+12. Project Status
+
+Completed: Windows 10 virtual machine created and desktop startup verified.
+
+Next: Configure endpoint monitoring and integrate Windows with Wazuh SIEM.
