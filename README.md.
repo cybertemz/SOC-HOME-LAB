@@ -72,3 +72,34 @@ Established a foundation for future endpoint monitoring and security investigati
 Completed: Windows 10 virtual machine created and desktop startup verified.
 
 Next: Configure endpoint monitoring and integrate Windows with Wazuh SIEM.
+
+
+
+SSH Remote Access from Windows to Ubuntu
+1. Objective
+Establish secure remote access from the Windows host to the Ubuntu Server virtual machine using Secure Shell (SSH).
+2. Environment
+Host operating system: Windows 10
+Virtualization software: VMware Workstation Pro 17
+Linux server: Ubuntu Server 24.04.1 LTS
+SSH client: Windows PowerShell
+Ubuntu server IP address: 192.168.239.134
+3. What I Did
+Identified the Ubuntu Server’s IP address using the ip -br addr command.
+Initiated an SSH connection from Windows PowerShell using the Ubuntu username and server IP address.
+Verified the server’s host fingerprint when prompted.
+Authenticated with my Ubuntu account credentials.
+Confirmed successful remote access by checking the Ubuntu welcome message and terminal prompt in PowerShell.
+4. My Understanding
+SSH (Secure Shell) is a network protocol that provides an encrypted connection for remote administration. It allows an administrator to execute commands on a Linux server from another computer without using the server’s local console.
+In this lab, Windows acts as the SSH client, while Ubuntu Server acts as the remote host. This setup provides a practical foundation for managing Linux systems and performing future security monitoring tasks.
+5. Purpose in the SOC Home Lab
+Remote SSH access will allow me to administer the Ubuntu server from Windows. It also helps me understand remote administration, authentication, and the importance of monitoring login activity in a Security Operations Center (SOC).
+6. Learning Outcomes
+Learned how to identify a Linux server’s IP address.
+Practised connecting to Ubuntu Server from Windows PowerShell.
+Understood the purpose of SSH encryption and authentication.
+Established a foundation for future Linux administration and SOC monitoring exercises.
+7. Project Status
+Completed: SSH remote access from Windows PowerShell to Ubuntu Server successfully verified.
+Next: Install and configure Wazuh SIEM for security monitoring and log analysis.
