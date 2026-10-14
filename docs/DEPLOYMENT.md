@@ -1,100 +1,62 @@
-# Deployment Journal
-## Setup Steps and Verification Record
+# Deployment Notes
 
-This guide distinguishes actions recorded as completed from items that still require verification. Commands are examples for the described lab and may need adjustment for the current VM network and configuration.
+These are my notes from setting up the virtual lab. I keep the steps I verified separate from checks I have not completed yet.
 
-## Phase 1 — Create the Virtual Lab
+## 1. Ubuntu Server
 
-### Ubuntu Server
-1. Create a virtual machine in VMware Workstation Pro 17.
-2. Attach the Ubuntu Server 24.04.1 LTS ISO.
-3. Complete the OS installation.
-4. Configure the hostname and a local username/password.
-5. Enable OpenSSH Server during installation or install it afterward.
-6. Boot the VM and confirm it reaches a login prompt.
+I created an Ubuntu Server 24.04.1 LTS VM in VMware Workstation, installed the operating system, and configured a local account.
 
-**Recorded status:** Ubuntu Server installed.
-
-### Windows 10
-1. Create a Windows 10 VM using the VMware wizard.
-2. Configure its virtual disk and basic VM settings.
-3. Start the VM and confirm the Windows desktop loads.
-
-**Recorded status:** VM created and desktop startup verified.
-
-## Phase 2 — Verify Ubuntu Network and SSH
-
-### Find the guest address
-
-Run inside Ubuntu:
+To check the current guest address from Ubuntu:
 
 ```bash
 ip -br addr
 ```
 
-Use the active interface address on the lab network. Do not assume an old DHCP address remains the same after a reboot.
+## 2. SSH from Windows PowerShell
 
-### Connect from Windows PowerShell
+I connected to Ubuntu from PowerShell using SSH:
 
 ```powershell
 ssh <ubuntu-username>@<ubuntu-lab-ip>
 ```
 
-On first connection, compare the displayed host fingerprint with a trusted value when possible. Continue only if the host identity is expected. Then authenticate with the Ubuntu account.
+The session reached the Ubuntu welcome message and shell prompt. That confirmed SSH remote shell access was working during the test.
 
-**Recorded verification:** The SSH session reached the Ubuntu welcome message and shell prompt.
-
-### Optional service checks
-
-On Ubuntu:
+If I need to troubleshoot it later, these checks may help:
 
 ```bash
 sudo systemctl status ssh
 sudo ss -lntp | grep ':22'
 ```
 
-These commands are checks to use if SSH stops working; the current notes do not record their output.
+These are troubleshooting commands; I'm not claiming I captured their output as part of the original successful connection.
 
-## Phase 3 — Initiate Windows Remote Desktop
+## 3. Windows 10 VM
 
-On the Windows system, run:
+I created a Windows 10 VM and checked that its desktop started.
 
-```powershell
-ipconfig
-```
+I also opened Remote Desktop Connection and reached the Windows credentials prompt. I haven't recorded a successful interactive remote desktop session yet, so RDP remains unverified.
 
-Use the relevant lab interface address, then open **Remote Desktop Connection** and enter the target VM address. Complete the Windows Security prompt using an authorized account.
+## 4. Wazuh dashboard and Windows agent
 
-**Recorded status:** The connection workflow reached the credential prompt.  
-**Pending verification:** Confirm that authentication succeeds, the remote desktop opens, and mouse/keyboard control works.
+I accessed the Wazuh dashboard and deployed the Windows agent using the dashboard's agent deployment workflow. My screenshots show:
 
-If the session fails, check that the target VM is running, RDP is enabled, the account is permitted to sign in through Remote Desktop, and the lab network/firewall allows the connection.
+- The Windows agent installation command being run in an elevated PowerShell window.
+- The message **“The Wazuh service was started successfully.”**
+- A TCP connectivity test returning `TcpTestSucceeded: True` for the port tested in the screenshot.
+- Agent ID `001`, named `wazuhwindows10`, listed as **Active** in Wazuh.
 
-## Phase 4 — Wazuh Dashboard Access
+The details and evidence are in [Wazuh Agent Deployment](WAZUH-AGENT-DEPLOYMENT.md).
 
-1. Review the official Wazuh installation documentation.
-2. Access the Wazuh dashboard.
-3. Record where the manager, indexer, and dashboard components are installed.
-4. Confirm the relevant services are healthy.
-5. Enroll the Windows endpoint using the appropriate Wazuh agent procedure.
-6. Verify the endpoint status and generate a harmless test event.
-7. Search for the event and record the evidence.
+## 5. What I still need to test
 
-**Recorded status:** Dashboard accessed.  
-**Pending verification:** Component health, agent enrollment, event ingestion, and alert validation.
+- [ ] Confirm an interactive RDP session opens and can be controlled.
+- [ ] Generate a harmless Windows event and find the matching event in Wazuh.
+- [ ] Inspect a relevant alert, if one is generated, and record its rule ID and severity.
+- [ ] Add the original sanitized screenshots to the repository and embed them in the relevant documentation.
 
-Official documentation: https://documentation.wazuh.com/
+The checkboxes above are next steps, not claims that the tasks have been completed.
 
-## Phase 5 — End-to-End Verification Checklist
+## Safety notes
 
-- [ ] Ubuntu guest has a current lab-network address.
-- [x] SSH from Windows PowerShell reaches an Ubuntu shell.
-- [x] Windows 10 VM desktop startup was checked.
-- [ ] RDP opens a usable remote desktop session.
-- [ ] Wazuh manager/indexer/dashboard topology is documented.
-- [ ] Windows endpoint appears active in Wazuh.
-- [ ] A controlled Windows event is searchable in Wazuh.
-- [ ] A detection rule produces an expected alert from a safe test.
-- [ ] The test, timestamp, query, result, and limitations are documented.
-
-Checkboxes represent the state in the available project notes, not an automatic live check of the machines.
+I don't put passwords, private keys, or generated credentials in this repository. I also avoid exposing SSH, RDP, or the Wazuh dashboard directly to the public internet.
