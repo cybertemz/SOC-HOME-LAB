@@ -1,73 +1,67 @@
-# Project Overview
-## SOC Home Lab — Scope, Goals, and Status
+# My SOC Home Lab — Overview
 
-## 1. Introduction
+## Why I'm building this
 
-This project builds a small virtual environment for learning the practical work of a Security Operations Centre (SOC). It focuses on the foundations: virtual machines, Linux administration, Windows endpoints, remote access, and preparing a SIEM workflow.
+I'm using a small virtual lab to practise the basics of SOC work: managing Linux and Windows machines, connecting to systems remotely, and learning how endpoint information appears in a security-monitoring tool.
 
-The lab is intentionally incremental. A component is treated as operational only after a meaningful verification step has been recorded.
+I want this repository to be a useful record of what I actually set up, what I checked, and what I still need to learn.
 
-## 2. Learning Goals
+## My environment
 
-- Install and administer Ubuntu Server.
-- Understand user accounts and SSH authentication.
-- Create a Windows endpoint VM and practise remote administration.
-- Learn the role of Wazuh in collecting, correlating, and presenting security telemetry.
-- Build a repeatable process for verifying data collection and investigating security events.
-- Maintain clear technical documentation suitable for future troubleshooting and portfolio review.
-
-## 3. Environment
-
-| Item | Recorded configuration |
+| Part | Details |
 |---|---|
-| Host platform | Windows computer |
-| Hypervisor | VMware Workstation Pro 17 |
+| Host computer | Windows |
+| Virtualization | VMware Workstation Pro 17 |
 | Linux VM | Ubuntu Server 24.04.1 LTS |
-| Linux remote access | OpenSSH Server; Windows PowerShell as client |
 | Windows VM | Windows 10 |
-| Windows remote access | Remote Desktop Connection |
-| SIEM interface | Wazuh dashboard |
-| Network | VMware virtual networking; exact mode and topology should be documented during verification |
+| SSH client | Windows PowerShell |
+| Monitoring platform | Wazuh |
 
-Specific local IP addresses are intentionally represented as placeholders in public documentation.
-
-## 4. Work Completed
+## Work I've completed
 
 ### Ubuntu Server
-Ubuntu Server 24.04.1 LTS was installed in VMware Workstation. A hostname and local account were configured during installation. OpenSSH Server was enabled to support remote administration.
 
-### SSH access
-The Ubuntu guest's address was identified with `ip -br addr`. A connection was initiated from Windows PowerShell, the server host fingerprint was checked at the first connection prompt, and the Ubuntu account was used to authenticate. A welcome message and shell prompt confirmed the remote session.
+I installed Ubuntu Server in VMware and configured a local account during setup.
 
-### Windows endpoint
-A Windows 10 VM was created and its desktop startup was checked. The VM is intended to provide endpoint activity for later monitoring exercises.
+### SSH from PowerShell
 
-### RDP
-The Windows network configuration was checked with `ipconfig`, and Remote Desktop Connection was opened with the target address. The workflow reached the Windows Security credential prompt. A successful interactive desktop session has not yet been confirmed in the recorded notes.
+I connected to the Ubuntu VM from Windows PowerShell using SSH. The session reached the Ubuntu welcome message and shell prompt, so I was able to access the Linux machine remotely.
 
-### Wazuh
-The official Wazuh site and installation documentation were reviewed, and the Wazuh dashboard was accessed. The current notes do not yet prove that the Windows endpoint is enrolled, that events are arriving, or that detections have been validated.
+Example command format:
 
-## 5. Out of Scope for the Current Verified State
+```powershell
+ssh <ubuntu-username>@<ubuntu-lab-ip>
+```
 
-The following are goals, not claims of completion:
+I use the current VM address when connecting because a DHCP address can change.
 
-- Production deployment or enterprise scale.
-- Confirmed Windows or Linux agent enrollment.
-- Verified end-to-end event ingestion.
-- Tested custom detection rules or alert delivery.
-- Automated response or SOAR workflows.
-- Compliance certification or production hardening.
+### Windows 10 VM
 
-## 6. Success Criteria
+I created a Windows 10 virtual machine and checked that the desktop started. I also tried the Remote Desktop Connection workflow, but my notes only confirm that it reached the credentials prompt. I won't call RDP fully working until I verify an interactive desktop session.
 
-The next stage will be considered verified when:
-1. RDP access is tested and the result is recorded.
-2. The Wazuh component topology and service health are documented.
-3. The Windows endpoint is visible as active in Wazuh.
-4. A controlled test event appears in the expected search view.
-5. At least one detection is validated with its evidence and limitations documented.
+### Wazuh and the Windows agent
 
-## 7. Project Method
+I accessed the Wazuh dashboard and used its agent deployment workflow for my Windows VM. My screenshots show the Wazuh service starting successfully, a successful TCP connectivity test, and the endpoint listed as Active with agent ID `001` and name `wazuhwindows10`.
 
-Use a verify-as-you-go process: make one change, test it, capture the result, then proceed. This keeps network, authentication, endpoint, and SIEM problems distinguishable rather than debugging multiple layers at once.
+That confirms the agent deployment status shown in those screenshots. I still need a separate test showing a specific Windows event arriving in Wazuh before I can say that event collection and detection have been validated end to end.
+
+## Current status
+
+| Task | Status |
+|---|---|
+| Ubuntu Server installed | Done |
+| SSH from PowerShell to Ubuntu | Verified |
+| Windows 10 VM created and started | Done |
+| Wazuh dashboard accessed | Done |
+| Windows Wazuh agent listed as Active | Shown in screenshots |
+| RDP interactive session | Not yet confirmed |
+| Specific Windows event found in Wazuh | Not yet documented |
+| Event-to-alert test | Not yet documented |
+
+## What I'm learning
+
+I'm learning to check one part at a time instead of assuming that one successful step means the whole setup is working. For example, an Active agent is a good sign, but it's different from proving that a particular event was collected and triggered a detection.
+
+## Next step
+
+My next exercise is to create a harmless Windows event, search for it in Wazuh, and save the evidence. I'll update this page when I've run that test.
