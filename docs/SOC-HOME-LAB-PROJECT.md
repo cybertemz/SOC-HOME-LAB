@@ -62,7 +62,5 @@ The screenshot evidence has not yet been added to this repository. This document
 This project helped me practise virtualisation, Linux remote administration, Windows remote-access concepts, and endpoint-agent deployment. It also reinforced the importance of distinguishing a successful installation from a fully verified monitoring pipeline.
 
 ## Next steps
-- Add the final selected screenshots under `docs/images/`.
-- Link each screenshot to the relevant stage above.
 - Validate the Wazuh event-to-alert workflow and document the result.
 - Keep the README and project notes aligned with the evidence actually present in the repository.
