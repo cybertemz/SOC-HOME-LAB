@@ -27,6 +27,8 @@ The agent deployment is documented, but I haven't yet documented a specific Wind
 
 ## Project notes
 
+- [Installation walkthrough and evidence plan](docs/INSTALLATION-WALKTHROUGH.md) — explains what each stage does, why I did it, what I learned, and which screenshots are worth keeping.
+
 - [Project overview](docs/PROJECT-OVERVIEW.md) — what I built and where the lab stands.
 - [Deployment notes](docs/DEPLOYMENT.md) — Ubuntu, SSH, Windows VM, and initial Wazuh work.
 - [Wazuh agent deployment](docs/WAZUH-AGENT-DEPLOYMENT.md) — the Windows agent steps and evidence from my screenshots.
