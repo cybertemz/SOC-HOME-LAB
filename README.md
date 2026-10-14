@@ -78,7 +78,8 @@ The diagram separates verified administrative access from the future monitoring 
 - [Architecture](docs/ARCHITECTURE.md) — components, trust boundaries, and intended event flow.
 - [Deployment Journal](docs/DEPLOYMENT.md) — setup steps and verification records.
 - [Components and Remote Access](docs/COMPONENTS.md) — Ubuntu, SSH, Windows VM, RDP, and Wazuh roles.
-- [Security Monitoring Roadmap](docs/SECURITY-MONITORING-ROADMAP.md) — endpoint onboarding and validation plan.
+- [Wazuh Agent Deployment](docs/WAZUH-AGENT-DEPLOYMENT.md) — Windows 10 agent installation, service start, connectivity check, and dashboard verification.
+- [Security Monitoring Roadmap](docs/SECURITY-MONITORING-ROADMAP.md) — endpoint telemetry and detection validation plan.
 - [Troubleshooting](docs/TROUBLESHOOTING.md) — safe checks for common lab issues.
 - [Lessons Learned](docs/LESSONS-LEARNED.md) — current takeaways and next improvements.
 
