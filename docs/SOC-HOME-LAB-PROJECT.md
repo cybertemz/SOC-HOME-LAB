@@ -54,21 +54,9 @@ ssh <ubuntu-username>@<ubuntu-lab-ip>
 4. Verify that the event reaches Wazuh and, where expected, produces an alert.
 5. Capture a clean screenshot of the result and remove sensitive information before publishing.
 
-## Screenshot policy
-Use only genuine screenshots from this lab. Prefer one or two clear images per stage rather than many repetitive installer screens. Use descriptive filenames such as:
-- `windows-10-vm-running.jpg`
-- `ubuntu-ssh-from-powershell.jpg`
-- `windows-rdp-test.jpg`
-- `wazuh-dashboard.jpg`
-- `wazuh-agent-status.jpg`
+## Evidence status
 
-When screenshots have been uploaded to `docs/images/`, embed them here using relative Markdown paths, for example:
-
-```markdown
-![Windows 10 VM running in VMware](images/windows-10-vm-running.jpg)
-```
-
-Do not claim an image is present until its file has actually been committed to the repository.
+The screenshot evidence has not yet been added to this repository. This document therefore describes the lab stages and verification criteria without displaying image links or implying that screenshots are already available. Add the selected original screenshots here after they have been uploaded and committed.
 
 ## Learning outcomes
 This project helped me practise virtualisation, Linux remote administration, Windows remote-access concepts, and endpoint-agent deployment. It also reinforced the importance of distinguishing a successful installation from a fully verified monitoring pipeline.
