@@ -1,67 +1,58 @@
-# My SOC Home Lab — Overview
+# SOC Home Lab — Project Overview
 
-## Why I'm building this
+## What I'm working on
 
-I'm using a small virtual lab to practise the basics of SOC work: managing Linux and Windows machines, connecting to systems remotely, and learning how endpoint information appears in a security-monitoring tool.
+I'm building this lab to get a better understanding of the basics of SOC work: managing Windows and Linux machines, collecting endpoint information, and learning how to investigate events in Wazuh.
 
-I want this repository to be a useful record of what I actually set up, what I checked, and what I still need to learn.
+Everything runs in VMware Workstation on my Windows computer.
 
-## My environment
+## My lab setup
 
-| Part | Details |
+| Component | Purpose |
 |---|---|
-| Host computer | Windows |
-| Virtualization | VMware Workstation Pro 17 |
-| Linux VM | Ubuntu Server 24.04.1 LTS |
-| Windows VM | Windows 10 |
-| SSH client | Windows PowerShell |
-| Monitoring platform | Wazuh |
+| Windows host | Runs the virtual machines |
+| VMware Workstation Pro 17 | Provides the virtual lab environment |
+| Ubuntu Server 24.04.1 LTS | Linux practice and Wazuh server environment |
+| Windows 10 Pro VM | Windows endpoint for monitoring |
+| Windows PowerShell | Used to connect to Ubuntu over SSH |
+| Wazuh | Central place to review endpoint status, events and alerts |
+| Sysmon | Records detailed activity on the Windows endpoint |
 
-## Work I've completed
+## What I've done so far
 
-### Ubuntu Server
+### Ubuntu and SSH
 
-I installed Ubuntu Server in VMware and configured a local account during setup.
+I installed Ubuntu Server in VMware and set up a local account. I then connected to it from Windows PowerShell using SSH:
 
-### SSH from PowerShell
+    ssh <ubuntu-username>@<ubuntu-lab-ip>
 
-I connected to the Ubuntu VM from Windows PowerShell using SSH. The session reached the Ubuntu welcome message and shell prompt, so I was able to access the Linux machine remotely.
+The session reached the Ubuntu welcome message and shell prompt, so SSH access worked during that test. I check the VM's current IP address before connecting because it can change.
 
-Example command format:
+### Windows VM and Remote Desktop
 
-```powershell
-ssh <ubuntu-username>@<ubuntu-lab-ip>
-```
+I created the Windows 10 virtual machine and confirmed that its desktop started. I also opened Remote Desktop Connection and reached the credentials prompt. I haven't yet confirmed a complete remote desktop session, so I still need to test that part.
 
-I use the current VM address when connecting because a DHCP address can change.
+### Wazuh
 
-### Windows 10 VM
+I accessed the Wazuh dashboard and deployed the Wazuh agent to my Windows VM. The screenshots I have show the service starting and the endpoint appearing as Active in the dashboard.
 
-I created a Windows 10 virtual machine and checked that the desktop started. I also tried the Remote Desktop Connection workflow, but my notes only confirm that it reached the credentials prompt. I won't call RDP fully working until I verify an interactive desktop session.
+That is a useful connection check, but it does not prove that a particular event has been collected and analysed. I still need to find a specific test event in Wazuh and document what happens to it.
 
-### Wazuh and the Windows agent
+## Current progress
 
-I accessed the Wazuh dashboard and used its agent deployment workflow for my Windows VM. My screenshots show the Wazuh service starting successfully, a successful TCP connectivity test, and the endpoint listed as Active with agent ID `001` and name `wazuhwindows10`.
-
-That confirms the agent deployment status shown in those screenshots. I still need a separate test showing a specific Windows event arriving in Wazuh before I can say that event collection and detection have been validated end to end.
-
-## Current status
-
-| Task | Status |
+| Task | Current status |
 |---|---|
-| Ubuntu Server installed | Done |
-| SSH from PowerShell to Ubuntu | Verified |
-| Windows 10 VM created and started | Done |
-| Wazuh dashboard accessed | Done |
-| Windows Wazuh agent listed as Active | Shown in screenshots |
-| RDP interactive session | Not yet confirmed |
+| Ubuntu Server installed | Completed |
+| SSH from PowerShell to Ubuntu | Tested successfully |
+| Windows 10 VM created and started | Completed |
+| Wazuh dashboard accessed | Completed |
+| Windows agent shown as Active | Visible in the saved evidence |
+| Full RDP desktop session | Not yet confirmed |
 | Specific Windows event found in Wazuh | Not yet documented |
 | Event-to-alert test | Not yet documented |
 
 ## What I'm learning
 
-I'm learning to check one part at a time instead of assuming that one successful step means the whole setup is working. For example, an Active agent is a good sign, but it's different from proving that a particular event was collected and triggered a detection.
+I'm learning not to treat one successful step as proof that the whole system works. SSH access, an active agent, event collection and a detection alert are separate things, and each needs its own check.
 
-## Next step
-
-My next exercise is to create a harmless Windows event, search for it in Wazuh, and save the evidence. I'll update this page when I've run that test.
+My next step is to generate a harmless Windows event, search for it in Wazuh, and save a screenshot of the result.
