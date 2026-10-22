@@ -1,97 +1,62 @@
-# Architecture
-## SOC Home Lab — Components and Data Flow
+# SOC Home Lab Architecture
 
-## 1. Architecture Principles
+This page explains how the parts of my lab fit together and which connections I've tested so far.
 
-**Keep the lab isolated.** Use VMware's private or NAT networking for lab traffic unless a specific exercise requires another arrangement. Do not expose management services directly to the public internet.
+## Basic setup
 
-**Separate administration from monitoring.** SSH and RDP are management paths. Wazuh endpoint telemetry is a monitoring path; successful remote access does not prove that logs are being collected.
+    Windows host
+        |
+    VMware Workstation
+        |------------------|
+    Ubuntu Server      Windows 10 VM
+        |                  |
+    SSH from PowerShell   Sysmon and Wazuh agent
+                              |
+                        Wazuh manager
+                              |
+                        Wazuh indexer
+                              |
+                        Wazuh dashboard
 
-**Verify each boundary.** Check VM connectivity first, then service availability, authentication, agent enrollment, and finally event visibility.
+The Windows host runs the virtual machines. I have tested SSH access from PowerShell to Ubuntu and have seen the Windows Wazuh agent listed as Active in the dashboard. I still need to capture a specific Sysmon event in Wazuh to verify the complete event path.
 
-**Document the real topology.** The exact Wazuh manager/indexer/dashboard placement and VMware network mode are not fully specified in the current notes and must be confirmed rather than assumed.
+## What each part does
 
-## 2. Logical Architecture
-
-```mermaid
-flowchart LR
-    subgraph Host["Windows host"]
-      PS[PowerShell / SSH client]
-      RDP[Remote Desktop Connection]
-      VM[VMware Workstation]
-    end
-    subgraph Guests["Virtual lab"]
-      UB[Ubuntu Server 24.04.1 LTS]
-      W10[Windows 10 endpoint VM]
-    end
-    subgraph Monitoring["Monitoring path — to verify"]
-      AG[Wazuh agent on endpoint]
-      MAN[Wazuh manager / indexer]
-      DASH[Wazuh dashboard]
-    end
-
-    VM --> UB
-    VM --> W10
-    PS -->|SSH over lab network| UB
-    RDP -. intended RDP session .-> W10
-    W10 -. agent enrollment pending .-> AG
-    AG -. event transport pending .-> MAN
-    MAN -. searchable events / alerts pending .-> DASH
-```
-
-Solid arrows show the documented VM and SSH relationship. Dashed arrows indicate an intended path that still needs end-to-end verification.
-
-## 3. Component Responsibilities
-
-| Component | Responsibility | Current evidence |
+| Component | Role in my lab | Current status |
 |---|---|---|
-| Windows host | Runs VMware and provides admin tools | In use |
-| VMware Workstation Pro 17 | Isolates guest operating systems | Ubuntu and Windows VMs created |
-| Ubuntu Server | Linux administration practice and SSH target | Installed; SSH session verified |
-| OpenSSH Server | Provides encrypted remote shell access | Enabled and reachable |
-| Windows 10 VM | Endpoint for future telemetry collection | Desktop startup verified |
-| RDP client/service | Remote Windows desktop administration | Connection initiated; session pending verification |
-| Wazuh dashboard | Interface for security monitoring | Accessed; event pipeline not yet verified |
+| Windows host | Runs VMware and provides administration tools | In use |
+| VMware Workstation Pro 17 | Runs the guest operating systems | Ubuntu and Windows VMs created |
+| Ubuntu Server | Linux practice and Wazuh environment | Installed; SSH tested |
+| PowerShell and SSH | Remote shell access to Ubuntu | Connection tested successfully |
+| Windows 10 VM | Endpoint for Windows telemetry | Desktop started |
+| Sysmon | Records selected Windows activity | Events visible locally in Event Viewer |
+| Wazuh agent | Collects configured endpoint data | Windows agent shown as Active |
+| Wazuh dashboard | Interface for searching and reviewing data | Accessible; specific event ingestion still needs testing |
 
-## 4. Administrative Flow: SSH
+## SSH and remote administration
 
-1. The administrator obtains the Ubuntu guest's current address from the VM console.
-2. PowerShell starts an SSH connection to the Ubuntu host.
-3. The SSH client checks the server's host key fingerprint when prompted.
-4. The user authenticates with the Ubuntu account.
-5. SSH encrypts the interactive session after connection setup.
-6. The remote shell allows authorized commands to be executed on Ubuntu.
+For SSH, I check the current Ubuntu address and connect from PowerShell:
 
-The host fingerprint verifies the identity of the SSH server; it is not the user's password and does not authenticate the user by itself.
+    ssh <ubuntu-username>@<ubuntu-lab-ip>
 
-Example command (replace placeholders with the current lab values):
+SSH provides an encrypted remote shell after the connection and authentication steps succeed. I treat SSH and RDP as administration tools; a working remote session doesn't prove that the SIEM is collecting events.
 
-```powershell
-ssh <ubuntu-username>@<ubuntu-lab-ip>
-```
+## How I expect the event path to work
 
-## 5. Intended Monitoring Flow
+1. Sysmon records selected Windows activity in the Sysmon Operational event channel.
+2. The Wazuh agent must be configured to collect that channel.
+3. The agent sends the collected data to the Wazuh manager.
+4. Wazuh processes the incoming events and applies relevant rules.
+5. The events and any resulting alerts can then be searched in the dashboard.
 
-1. Windows generates security and system events.
-2. A Wazuh agent on the Windows endpoint collects configured telemetry.
-3. The agent sends events to the Wazuh manager.
-4. Wazuh decodes and evaluates the events using configured rules.
-5. Events and alerts become available through the indexer/dashboard components.
+I have seen Sysmon events locally and have seen the Windows agent marked Active. I still need to locate a particular event in Wazuh before I can say that the full path has been verified.
 
-Steps 2–5 must be validated in this lab. Merely opening the dashboard does not demonstrate that an endpoint is connected or producing searchable events.
+## Keeping the lab safe
 
-## 6. Trust Boundaries
+- Keep the virtual machines on the intended lab network.
+- Verify an SSH host fingerprint when connecting to a machine for the first time.
+- Restrict RDP and other management services to authorised lab systems.
+- Never publish passwords, private keys or Wazuh enrollment secrets.
+- Check screenshots for sensitive information before adding them to a public repository.
 
-- **Host-to-guest boundary:** VMware virtual networking separates guest workloads from the host, but it is not a substitute for host security.
-- **SSH boundary:** Protect credentials and verify the server fingerprint before trusting a new host.
-- **RDP boundary:** Permit access only from intended lab systems and use a dedicated account with appropriate permissions.
-- **SIEM boundary:** Use protected enrollment credentials and restrict manager communication to the lab network.
-- **Repository boundary:** Public documentation should not contain passwords, private keys, enrollment secrets, or unnecessary network details.
-
-## 7. Architecture Details to Record Next
-
-- VMware network mode (NAT, host-only, or bridged) and why it was chosen.
-- Current IP assignment method for each VM, with public-facing documentation using placeholders.
-- Where Wazuh manager, indexer, and dashboard are installed.
-- Which ports are required between the endpoint and Wazuh manager in this specific deployment.
-- Which Windows event channels are collected and how a test event is verified.
+As I continue the lab, I'll record the VMware network mode, where the Wazuh components are running, and which Windows event channels are configured for collection.
