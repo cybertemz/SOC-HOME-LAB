@@ -26,9 +26,21 @@ My dedicated Ubuntu server hosts the Wazuh monitoring platform. The Wazuh manage
 
 I verified that the `wazuh-manager` service on my server showed **active (running)**. The dashboard also showed my Windows and Ubuntu agents as **Active**.
 
+**Evidence — Wazuh Manager service**
+
+![Wazuh Manager service status](./wazuhmanager%20status.png)
+
+This terminal output supports the claim that the manager service was running when I checked it.
+
 ### Wazuh agent
 
 I deployed Wazuh agents to my Windows 10 endpoint and my separate Ubuntu endpoint. The agents provide a way for the server to receive supported endpoint information. What reaches Wazuh depends on the agent configuration, available log sources, and the event collection settings.
+
+**Evidence — endpoint connectivity**
+
+![Wazuh dashboard showing active Windows and Ubuntu agents](./wazuhagentdashboard.png)
+
+The dashboard shows both agents as Active. This confirms connection status, not by itself the successful arrival of every type of event.
 
 ### Sysmon on Windows
 
@@ -43,6 +55,12 @@ Depending on the Sysmon configuration, event types can include:
 
 The events collected depend on Sysmon's configuration, so this list describes common event types rather than claiming that every event type is enabled in my lab. My Event Viewer screenshot shows the Sysmon Operational log populated with events, including visible examples of process, image-load, registry, and network-related activity.
 
+**Evidence — Sysmon Operational log on Windows**
+
+![Sysmon Operational events in Windows Event Viewer](./windows%20sysmonevent.png)
+
+This screenshot shows locally recorded Sysmon events on my Windows endpoint.
+
 ### How Sysmon events can reach the Wazuh dashboard
 
 The intended event path is:
@@ -54,6 +72,12 @@ The intended event path is:
 5. A SOC analyst reviews the event details and surrounding context to decide whether further investigation is needed.
 
 **Verification note:** My screenshots currently demonstrate that Sysmon has recorded local Windows events and that the Windows and Ubuntu agents appear Active in Wazuh. I have not included a screenshot that independently proves a specific Sysmon event was received and searched in Wazuh. I will claim end-to-end Sysmon forwarding only after I verify it in the dashboard.
+
+**Evidence — Ubuntu agent status**
+
+![Ubuntu Wazuh agent status evidence](./wazuhagentstatus.png)
+
+Use this image as agent-service evidence only if it shows the Ubuntu agent service status; otherwise, replace it with a direct screenshot of `sudo systemctl status wazuh-agent` on the `ubuntuagent` VM.
 
 ## Lab architecture
 
@@ -67,16 +91,9 @@ The intended event path is:
 | Wazuh dashboard | Agent visibility, event search, and alert investigation |
 | Windows Event Viewer | Local inspection of Sysmon Operational events |
 
-## Evidence in this repository
+## Evidence approach
 
-The screenshots are real captures from my own lab. They document the state I observed rather than simulated or AI-generated results.
-
-- `wazuhmanagerstatus.png` — Wazuh manager service status on the server.
-- `wazuhagentdashboard.png` — dashboard showing the Windows and Ubuntu agents as Active.
-- `windowssysmonevent.png` — Sysmon Operational events recorded on Windows.
-- `wazuhagentstatus.png` — agent-related status evidence.
-
-Filenames may be adjusted to match the exact files in the repository. I will keep the evidence aligned with what each screenshot actually shows.
+The screenshots embedded above are intended to sit beside the explanation they support. They are real captures from my lab, not simulated or AI-generated results. I will keep each caption specific to what the image actually proves.
 
 ## What I learned and what I will test next
 
