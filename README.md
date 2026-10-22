@@ -1,121 +1,99 @@
-# My SOC Home Lab
+# SOC Home Lab: Wazuh, Windows and Ubuntu
 
-## Project overview
+## Why I built this lab
 
-I built this home lab to understand how a Security Operations Center (SOC) collects endpoint activity, brings it into one place, and helps an analyst investigate events. Rather than treating security tools as separate installations, I wanted to understand the role each component plays in a monitoring workflow.
+I set up this lab to learn how a SOC analyst gets visibility into activity on computers and uses that information to investigate what is happening. I wanted to understand how the pieces work together, not just install the tools and move on.
 
-This is a hands-on learning project running in VMware Workstation. I use a dedicated Ubuntu VM as my Wazuh server, a Windows 10 Pro VM as an endpoint, and a separate Ubuntu VM with the Wazuh agent deployed. My Windows endpoint also has Sysmon installed.
+The lab runs in VMware Workstation on my Windows host. I have a Ubuntu VM running the Wazuh server, a Windows 10 Pro VM with the Wazuh agent and Sysmon, and a separate Ubuntu VM with the Wazuh agent.
 
-## What I understand about SOC monitoring
+## How the tools work together
 
-A SOC analyst needs visibility into activity across computers, a way to search and correlate events, and a process for deciding which activity needs investigation. A SIEM such as Wazuh centralizes security events and can generate alerts when collected data matches configured rules. An alert is a lead to investigate, not automatic proof that an attack has occurred.
+### Wazuh
 
-In this lab, I am learning to distinguish between three different things:
+Wazuh is the SIEM I am using for this project. It brings endpoint data into one place so I can check which agents are connected, search collected events, and review alerts. The manager analyses incoming data using its decoders and rules. An alert is something to investigate; it is not proof by itself that an attack happened.
 
-- **Generating telemetry:** a system or tool records activity.
-- **Collecting and centralizing logs:** an agent forwards configured logs to the monitoring platform.
-- **Investigating detections:** an analyst reviews the event details, context, and any matching alert before drawing a conclusion.
+I checked the Wazuh manager service on the Ubuntu server and saw that it was running. In the dashboard, my Windows and Ubuntu agents were also shown as **Active**.
 
-Seeing an agent marked **Active** in the Wazuh dashboard confirms that it is connected to the manager. By itself, that status does not prove that every expected log source is configured or that a particular event has arrived.
-
-## How Wazuh and Sysmon fit together
-
-### Wazuh server
-
-My dedicated Ubuntu server hosts the Wazuh monitoring platform. The Wazuh manager receives events from enrolled agents, analyzes supported data using decoders and rules, and produces alerts when activity matches detection logic. The Wazuh dashboard provides a place to review agent status, search available data, and investigate alerts.
-
-I verified that the `wazuh-manager` service on my server showed **active (running)**. The dashboard also showed my Windows and Ubuntu agents as **Active**.
-
-**Evidence — Wazuh Manager service**
+**Evidence — Wazuh manager service**
 
 ![Wazuh Manager service status](./wazuhmanager%20status.png)
 
-This terminal output supports the claim that the manager service was running when I checked it.
+This terminal screenshot shows the manager service status at the time I checked it.
 
-### Wazuh agent
+### Wazuh agents
 
-I deployed Wazuh agents to my Windows 10 endpoint and my separate Ubuntu endpoint. The agents provide a way for the server to receive supported endpoint information. What reaches Wazuh depends on the agent configuration, available log sources, and the event collection settings.
+I installed the Wazuh agent on my Windows endpoint and on a separate Ubuntu endpoint. The agents are the link between those machines and the Wazuh server. What Wazuh can see depends on which log sources and collection settings are configured.
 
-**Evidence — endpoint connectivity**
+**Evidence — agent status in the dashboard**
 
 ![Wazuh dashboard showing active Windows and Ubuntu agents](./wazuhagentdashboard.png)
 
-The dashboard shows both agents as Active. This confirms connection status, not by itself the successful arrival of every type of event.
+Both agents appear as **Active** in this screenshot. That tells me they are connected to the manager; it does not prove that every event source is being collected correctly.
 
 ### Sysmon on Windows
 
-Sysmon (System Monitor) is a Windows system service and driver that records detailed system activity in the Windows Event Log. It provides useful telemetry for investigating what happened on an endpoint. Sysmon does not, by itself, decide that an event is malicious, and recording an event is not the same as generating a Wazuh alert.
+Sysmon is a Windows tool that records detailed system activity in the Windows Event Log. It is useful when I need more context about what happened on a machine. Sysmon records events; it does not decide on its own whether an activity is malicious.
 
-Depending on the Sysmon configuration, event types can include:
+Some common Sysmon event types are:
 
-- **Event ID 1 — Process creation:** records a process starting, including useful context such as the image and command line when configured.
-- **Event ID 3 — Network connection:** records network connections made by a process when network-connection logging is enabled.
-- **Event ID 7 — Image loaded:** records a module or image loaded by a process when enabled; this can be high-volume.
-- **Event IDs 12, 13 and 14 — Registry events:** record selected registry key/object creation or deletion, value setting, and key/value renaming activity, depending on the event ID and configuration.
+- **Event ID 1 — Process creation:** records a process starting, with details such as the process image and, when configured, the command line.
+- **Event ID 3 — Network connection:** records network connections when that event type is enabled in the Sysmon configuration.
+- **Event ID 7 — Image loaded:** records a module loaded by a process when enabled.
+- **Event IDs 12–14 — Registry activity:** record selected registry key and value changes.
 
-The events collected depend on Sysmon's configuration, so this list describes common event types rather than claiming that every event type is enabled in my lab. My Event Viewer screenshot shows the Sysmon Operational log populated with events, including visible examples of process, image-load, registry, and network-related activity.
+The events available depend on the Sysmon configuration. In my Windows Event Viewer screenshot, the Sysmon Operational log contains recorded events.
 
-**Evidence — Sysmon Operational log on Windows**
+**Evidence — Sysmon events on Windows**
 
 ![Sysmon Operational events in Windows Event Viewer](./windows%20sysmonevent.png)
 
-This screenshot shows locally recorded Sysmon events on my Windows endpoint.
+This is evidence that Sysmon is recording events locally on the Windows VM.
 
-### How Sysmon events can reach the Wazuh dashboard
+### How Sysmon data gets to Wazuh
 
-The intended event path is:
+The path I am working to verify is:
 
-1. Sysmon records selected Windows activity in **Microsoft-Windows-Sysmon/Operational**.
-2. The Wazuh agent on Windows must be configured to collect that Sysmon event channel.
-3. The agent forwards collected events to the Wazuh server.
-4. Wazuh processes the incoming data. Depending on the event, configuration, and matching rules, it may be searchable in the dashboard and may produce an alert.
-5. A SOC analyst reviews the event details and surrounding context to decide whether further investigation is needed.
+1. Sysmon records selected activity in the **Microsoft-Windows-Sysmon/Operational** event channel.
+2. The Wazuh agent on Windows is configured to read that channel.
+3. The agent sends the collected events to the Wazuh server.
+4. Wazuh processes the data so it can be searched and, when a rule matches, may generate an alert.
+5. I review the event details and context before deciding whether it needs further investigation.
 
-**Verification note:** My screenshots currently demonstrate that Sysmon has recorded local Windows events and that the Windows and Ubuntu agents appear Active in Wazuh. I have not included a screenshot that independently proves a specific Sysmon event was received and searched in Wazuh. I will claim end-to-end Sysmon forwarding only after I verify it in the dashboard.
+I have confirmed that Sysmon is recording events locally and that the Windows and Ubuntu agents show as Active in Wazuh. I still need to capture clear dashboard evidence of a specific Sysmon event arriving in Wazuh before I can say that I have verified the full path end to end.
 
-**Evidence — Ubuntu agent status**
+**Evidence — Ubuntu agent service**
 
-![Ubuntu Wazuh agent status evidence](./wazuhagentstatus.png)
+![Ubuntu Wazuh agent status](./wazuhagentstatus.png)
 
-Use this image as agent-service evidence only if it shows the Ubuntu agent service status; otherwise, replace it with a direct screenshot of `sudo systemctl status wazuh-agent` on the `ubuntuagent` VM.
+This image is included as Ubuntu agent-service evidence. The service status should be read from the terminal output shown in the screenshot; the dashboard's **Active** status alone only confirms the agent connection.
 
-## Lab architecture
+## Lab layout
 
-| Component | Role in my lab |
+| Component | What it does in my lab |
 |---|---|
-| Windows host computer | Runs the virtual machines |
-| VMware Workstation | Provides the isolated lab environment |
-| Ubuntu Wazuh server | Central monitoring and analysis |
-| Windows 10 Pro VM | Endpoint with Wazuh agent and Sysmon |
-| Separate Ubuntu VM | Endpoint monitored by its Wazuh agent |
-| Wazuh dashboard | Agent visibility, event search, and alert investigation |
-| Windows Event Viewer | Local inspection of Sysmon Operational events |
+| Windows host | Runs the virtual machines |
+| VMware Workstation | Provides the virtual lab environment |
+| Ubuntu Wazuh server | Receives and analyses endpoint data |
+| Windows 10 Pro VM | Windows endpoint running the Wazuh agent and Sysmon |
+| Separate Ubuntu VM | Linux endpoint running the Wazuh agent |
+| Wazuh dashboard | Lets me check agents, search events and review alerts |
+| Windows Event Viewer | Lets me inspect Sysmon events recorded on Windows |
 
-## Evidence approach
+## What I have learned so far
 
-The screenshots embedded above are intended to sit beside the explanation they support. They are real captures from my lab, not simulated or AI-generated results. I will keep each caption specific to what the image actually proves.
+This project has helped me see that installing a SIEM is only the beginning. The event source has to record useful information, the agent has to collect it, and the server has to receive it before I can investigate it in the dashboard. An agent showing as Active is a good first check, but it is not the same as proving that a particular event made it all the way through.
 
-## What I learned and what I will test next
+My next steps are to check the Windows agent's Sysmon channel configuration, find a harmless test event, and search for that event in Wazuh. I also want to check whether Wazuh creates an alert for it and understand which rule caused that result.
 
-Building this lab has helped me understand that a monitoring setup is more than installing a SIEM. The server, agents, event sources, and collection configuration each have a different job. A healthy agent connection is an important first check, while useful detection work also depends on confirming that the right events are collected and then investigating their meaning.
+This is a practice lab, so I am documenting what I have checked and keeping the remaining tests clear rather than marking them as completed before I have evidence.
 
-My next validation steps are to:
+## Security notes
 
-1. Confirm that the Windows Wazuh agent is configured to collect the Sysmon Operational channel.
-2. Generate or identify a benign test event and locate the matching event in Wazuh.
-3. Check whether the event produces an alert, and explain why it did or did not.
-4. Record the result with a real screenshot and document any configuration changes.
+- I do not include passwords or private keys in this repository.
+- I avoid exposing SSH, RDP or the Wazuh dashboard directly to the public internet.
+- I check screenshots for sensitive information before publishing them.
 
-This is a learning lab, not a production SOC. I will continue to separate verified results from work that still needs testing.
-
-## Security and documentation habits
-
-- I do not publish passwords, private keys, or generated credentials.
-- I avoid exposing SSH, RDP, or the Wazuh dashboard directly to the public internet.
-- I review screenshots for sensitive details before publishing them.
-- I document what I tested, what the evidence shows, and what remains unverified.
-
-## Related project notes
+## Project notes
 
 - [Project overview](docs/PROJECT-OVERVIEW.md)
 - [Deployment notes](docs/DEPLOYMENT.md)
