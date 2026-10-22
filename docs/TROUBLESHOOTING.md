@@ -1,71 +1,54 @@
-# Troubleshooting
-## Checks for Common Home-Lab Problems
+# Troubleshooting Notes
 
-Start with the lowest layer and change one thing at a time: VM state, network address, reachability, service status, authentication, then application or SIEM state.
+When something stops working, I check one layer at a time: the VM, its IP address, network reachability, service status, authentication, and finally the application.
 
-## 1. Ubuntu SSH Connection Fails
+## Ubuntu SSH connection fails
 
-### Check the guest is running and has an address
-Inside Ubuntu:
+First, check that Ubuntu is running and has a current IP address:
 
-```bash
-ip -br addr
-```
+    ip -br addr
 
-Confirm the address belongs to the expected VMware interface and use the current address rather than an old DHCP lease.
+Then check the SSH service and whether anything is listening on port 22:
 
-### Check SSH service
-```bash
-sudo systemctl status ssh
-sudo ss -lntp | grep ':22'
-```
+    sudo systemctl status ssh
+    sudo ss -lntp | grep ':22'
 
-If the service is inactive, inspect the service output before making changes. On Ubuntu, the service is commonly named `ssh`.
+From PowerShell, I can test the connection and try SSH again:
 
-### Check from PowerShell
-```powershell
-Test-NetConnection <ubuntu-lab-ip> -Port 22
-ssh <ubuntu-username>@<ubuntu-lab-ip>
-```
+    Test-NetConnection <ubuntu-lab-ip> -Port 22
+    ssh <ubuntu-username>@<ubuntu-lab-ip>
 
-If the TCP test fails, check VM networking and firewall rules. If the TCP test succeeds but authentication fails, check the username, account state, and configured authentication method.
+If the TCP test fails, I check the VM network mode and firewall rules. If the TCP test works but login fails, I check the username, account and authentication method.
 
-### Host fingerprint warning
-A host-key change can occur after a VM is rebuilt, but it can also indicate that the target is not the expected machine. Verify the fingerprint through a trusted path before removing or replacing a saved host key.
+If SSH warns that the host key has changed, I verify that I'm connecting to the correct VM before changing the saved host key. A rebuilt VM can have a new key, but the warning should not be ignored automatically.
 
-## 2. RDP Does Not Open a Desktop
+## RDP does not open the Windows desktop
 
-Check:
-- The Windows target VM is running and has a current address.
-- Remote Desktop is enabled on the target edition and configuration.
-- The user is allowed to sign in through Remote Desktop.
-- Windows Firewall permits RDP from the intended lab network.
-- The client is connecting to the correct target address.
+I check that the Windows VM is running, that I'm using its current address, that Remote Desktop is enabled, and that the account is allowed to connect. I also check that the firewall allows the connection from the lab network.
 
-Reaching the credentials prompt is only partial progress. Confirm the desktop opens and accepts input before marking the connection complete.
+Reaching the credentials prompt is only partial progress. I need to see and control the remote desktop before I call the connection successful.
 
-## 3. Wazuh Dashboard Opens but No Endpoint Events Appear
+## Wazuh dashboard opens but I cannot find events
 
-A dashboard login does not prove ingestion. Check in order:
-1. The Wazuh manager, indexer, and dashboard services are healthy.
-2. The Windows endpoint can reach the configured manager.
-3. The Wazuh agent is installed, running, and enrolled.
-4. The endpoint appears active in the dashboard.
-5. The selected time range and query match the test event.
-6. The relevant event collection settings are enabled.
+Opening the dashboard is not the same as confirming event collection. I check:
 
-Record exact errors and timestamps, but redact tokens, passwords, and private details before sharing logs.
+1. Whether the relevant Wazuh services are running.
+2. Whether the endpoint can reach the configured manager.
+3. Whether the agent is installed, running and enrolled.
+4. Whether the endpoint appears Active.
+5. Whether the search and time range match the event I am looking for.
+6. Whether the required event channel or log source is enabled in the agent configuration.
 
-## 4. VMware Network Address Changes
+I keep the exact error and timestamp when troubleshooting, but remove passwords, tokens and other sensitive details before sharing logs.
 
-A guest address can change when DHCP leases renew or the VM network configuration changes. Re-check `ip -br addr` in Ubuntu or `ipconfig` in Windows before troubleshooting a remote connection.
+## A VM's IP address changes
 
-Document the network mode (NAT, host-only, or bridged) and use the right interface for the intended path.
+A DHCP address can change after a lease renews or the network configuration changes. I check the current address in Ubuntu or Windows before trying an old one.
 
-## 5. Safe Troubleshooting Practice
+## Safe troubleshooting habits
 
-- Take a snapshot before risky configuration changes.
-- Capture the current state before restarting services.
-- Avoid disabling firewalls as a first-line fix.
-- Never expose SSH, RDP, or Wazuh services publicly just to make connectivity work.
-- Remove secrets and sensitive host details from pasted logs.
+- Take a snapshot before risky changes.
+- Check the current state before restarting services.
+- Avoid turning off the firewall as a first fix.
+- Do not expose SSH, RDP or Wazuh directly to the public internet to solve a lab connection problem.
+- Remove secrets from screenshots and copied logs.
