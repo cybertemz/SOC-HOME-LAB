@@ -1,87 +1,51 @@
-# Wazuh Installation and Initial Access
-## SOC Home Lab — Installation Record
+# Wazuh Installation Notes
 
-## 1. Objective
+## Why I'm using Wazuh
 
-This stage documents the Wazuh setup work for the SOC home lab. Wazuh is a security monitoring platform used to collect endpoint telemetry, analyse events, and present security alerts.
+Wazuh is the SIEM and security-monitoring platform I'm using in my SOC home lab. I want to understand how endpoint information is collected, processed and made available for investigation.
 
-This record distinguishes initial installation/dashboard access from a fully verified monitoring pipeline.
+I'm keeping installation and service checks separate from endpoint monitoring tests, because opening the dashboard alone doesn't prove that events are reaching it.
 
-## 2. Lab Environment
+## Environment
 
-| Item | Recorded environment |
+| Item | Details |
 |---|---|
 | Host | Windows computer |
-| Virtualization | VMware Workstation Pro 17 |
+| Virtualisation | VMware Workstation Pro 17 |
 | Linux VM | Ubuntu Server 24.04.1 LTS |
-| Platform | Wazuh |
-| Official reference | [Wazuh Quickstart](https://documentation.wazuh.com/current/quickstart.html) |
+| Monitoring platform | Wazuh |
 
-Record the exact Wazuh version and component placement from the installation output rather than assuming them.
+The official [Wazuh Quickstart guide](https://documentation.wazuh.com/current/quickstart.html) is my reference for the installation process.
 
-## 3. Main Components
+## Main components
 
-- **Wazuh server:** receives and analyses data from enrolled agents.
-- **Wazuh indexer:** stores and indexes security events and alerts.
-- **Wazuh dashboard:** web interface for reviewing events and alerts.
-- **Wazuh agent:** endpoint software that collects configured data and sends it to the Wazuh server.
+- **Wazuh manager:** receives and analyses data from enrolled agents.
+- **Wazuh indexer:** stores and indexes events and alerts.
+- **Wazuh dashboard:** provides the interface for reviewing data.
+- **Wazuh agent:** runs on an endpoint and collects the sources configured for that machine.
 
-The central components and the endpoint agent have different roles. Dashboard access alone does not prove that endpoint monitoring is working.
+The server-side components and the endpoint agent each have a different role. I need to check their status and then test event collection separately.
 
-## 4. Installation Approach
+## Progress recorded so far
 
-The official Wazuh documentation provides installation instructions and an installation assistant for deploying the central components. Use the official guide appropriate to the actual deployment.
+I have accessed the Wazuh dashboard and worked on deploying the Windows agent. My Windows agent deployment notes contain the evidence for the service start and the endpoint appearing as Active.
 
-**Command evidence:** Add the exact command used from the installation screenshots or notes after confirming it. Do not invent a command or claim a successful result without supporting output.
+I have not recorded enough evidence in this document to confirm the exact installed Wazuh version, the location of every central component, or a complete event-to-alert test. I won't mark those items as completed until I check them.
 
-Official reference: [Wazuh Quickstart](https://documentation.wazuh.com/current/quickstart.html).
+## Checks to complete
 
-## 5. Recorded Progress
+- [ ] Record the Wazuh version and the installation method used.
+- [ ] Confirm where the manager, indexer and dashboard are running.
+- [ ] Check the relevant service status.
+- [ ] Confirm that the dashboard is accessible after the service checks.
+- [ ] Confirm endpoint enrollment and agent status.
+- [ ] Find a harmless test event in the dashboard before claiming event collection works.
+- [ ] Validate an alert only after the event has been located and its details reviewed.
 
-| Checkpoint | Status in current project notes |
-|---|---|
-| Official Wazuh documentation reviewed | Recorded |
-| Wazuh dashboard accessed | Recorded |
-| Exact version and component topology | Needs confirmation |
-| Manager, indexer, and dashboard service health | Needs verification |
-| Windows agent enrolled and active | Not verified in this record |
-| Test event searchable in the dashboard | Not verified |
-| Detection alert validated end to end | Not verified |
+## Lab security
 
-These statuses must be updated only when there is evidence from the installation output, service checks, or dashboard.
+I keep Wazuh and remote administration services on the intended lab network. I do not commit passwords, generated credentials, API tokens or private keys. I also review screenshots before publishing them.
 
-## 6. Screenshots and Evidence
+## Current takeaway
 
-Add the existing installation screenshots to this section after confirming their filenames and contents. Suggested captions, only where supported by the image:
-
-1. **Installation process** — command or installer progress.
-2. **Installation result** — final installer status or result.
-3. **Initial dashboard access** — Wazuh interface visible.
-
-Before uploading, remove or obscure passwords, generated credentials, tokens, private keys, and other sensitive information. Do not describe an installer as successful unless the screenshot actually shows a successful result.
-
-## 7. Verification Checklist
-
-- [ ] Record the installed Wazuh version and actual installation method.
-- [ ] Identify where the server, indexer, and dashboard components are running.
-- [ ] Check and record the relevant service status.
-- [ ] Confirm dashboard access after checking the services.
-- [ ] Treat Windows agent enrollment as a separate milestone.
-- [ ] Generate a harmless test event and confirm it is searchable before claiming event collection works.
-- [ ] Validate a detection only after the event pipeline is confirmed.
-
-## 8. Security and Lab Hygiene
-
-- Keep Wazuh and remote-administration services on the intended lab network.
-- Do not expose the dashboard, SSH, or RDP directly to the public internet.
-- Never commit passwords or generated Wazuh credentials.
-- Redact sensitive details in screenshots and logs.
-- Make one configuration change at a time and record the observed result.
-
-## 9. Outcome
-
-This document records the Wazuh setup stage and the initial dashboard access noted for the SOC home lab. Full SIEM operation remains **unverified** until service health, agent enrollment, event ingestion, and detection validation have been demonstrated and documented.
-
----
-
-*Project method: verify the evidence, document the actual result, and distinguish completed work from the next milestone.*
+I can access the dashboard and have evidence of the Windows agent showing as Active. The next important milestone is to verify a specific endpoint event in Wazuh and record what I find.
