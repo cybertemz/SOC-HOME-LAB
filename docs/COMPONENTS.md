@@ -1,82 +1,52 @@
-# Components and Remote Access
-## Purpose, Operation, and Security Notes
+# Tools in My SOC Home Lab
 
-## 1. VMware Workstation Pro 17
+## VMware Workstation Pro 17
 
-VMware Workstation runs the Ubuntu Server and Windows 10 virtual machines on the host computer. It provides a controlled environment for testing without installing the guest operating systems directly on the host.
+VMware Workstation lets me run Ubuntu Server and Windows 10 as virtual machines on my Windows computer. It gives me a place to practise configuration and troubleshooting without installing those operating systems directly on the host.
 
-**Operational notes**
-- Use clear VM names and take snapshots before major changes.
-- Record CPU, RAM, disk, and network settings as the lab evolves.
-- Prefer a private or NAT network for routine practice; use bridged mode only when you understand the exposure it creates.
+I plan to keep snapshots before major changes and check the VM's memory, disk and network settings when troubleshooting.
 
-## 2. Ubuntu Server 24.04.1 LTS
+## Ubuntu Server 24.04.1 LTS
 
-Ubuntu Server is the Linux guest used for command-line administration and SSH practice. The initial installation included creation of a hostname and local account.
+Ubuntu is the Linux machine I use for command-line practice and SSH. These commands help me check the system:
 
-Useful commands:
+    hostnamectl
+    ip -br addr
+    whoami
 
-```bash
-hostnamectl
-ip -br addr
-whoami
-```
+They show the hostname and operating-system details, network addresses and current user.
 
-These commands show the system identity, interface addresses, and active user. Avoid publishing account names or private addresses if they reveal unnecessary lab details.
+## PowerShell and OpenSSH
 
-## 3. OpenSSH Server
+I use Windows PowerShell to connect to Ubuntu over SSH:
 
-OpenSSH provides encrypted remote shell access. In this lab, Windows PowerShell is the client and Ubuntu Server is the SSH host.
+    ssh <ubuntu-username>@<ubuntu-lab-ip>
 
-```powershell
-ssh <ubuntu-username>@<ubuntu-lab-ip>
-```
+SSH encrypts the remote session. The host key helps identify the server, while user authentication checks whether the account is allowed to connect. The connection to my Ubuntu shell worked during my test.
 
-### Authentication concepts
-- **Host key/fingerprint:** helps the client verify that it is connecting to the expected server.
-- **User authentication:** proves that the connecting user is authorized, for example with the configured account credentials or an SSH key.
-- **Encryption:** protects the SSH session in transit after negotiation.
+## Windows 10 endpoint
 
-The recorded setup used the Ubuntu account credentials and accepted a host fingerprint prompt. The notes do not establish whether public-key authentication is configured, whether password authentication remains enabled, or what the effective SSH daemon policy is.
+The Windows VM is the endpoint I use to practise monitoring. Windows records different kinds of activity in event logs, but those events only become useful for central investigation when the right log sources are configured and collected.
 
-If checking configuration, use:
+I use Event Viewer to inspect local logs and the Wazuh dashboard to check the agent and search for collected data.
 
-```bash
-sudo sshd -T | grep -E 'passwordauthentication|pubkeyauthentication|permitrootlogin'
-```
+## Sysmon
 
-Treat the output as a current configuration check, not as a value already verified by this repository.
+Sysmon records detailed Windows activity in the Sysmon Operational event log. The exact events recorded depend on its configuration. In my lab, I have viewed Sysmon events locally; I still need to document a matching event in Wazuh to verify the full collection path.
 
-## 4. Windows 10 Endpoint VM
+## Wazuh
 
-The Windows guest is intended to produce endpoint telemetry for security monitoring exercises. Windows can record sign-ins, process activity, service changes, and other system events, but the lab still needs a verified collection path before those events can be investigated centrally.
+Wazuh is the SIEM I'm learning to use. The agent collects configured data from an endpoint, the manager processes incoming events, and the dashboard lets me search events and review alerts.
 
-Potential verification tools:
-- Event Viewer for inspecting local event channels.
-- PowerShell for querying event logs.
-- Wazuh agent status and endpoint state after onboarding.
+The dashboard is accessible, and the Windows agent has appeared as Active. My next step is to find a specific event in the dashboard and inspect any related alert.
 
-## 5. Remote Desktop Protocol (RDP)
+## Remote Desktop Protocol (RDP)
 
-RDP provides interactive remote access to a Windows desktop. The recorded workflow checked network configuration with `ipconfig`, opened Remote Desktop Connection, entered the target address, and reached the credential prompt.
+RDP is used for interactive access to a Windows desktop. In my test, I reached the credentials prompt, but I have not yet recorded evidence that the desktop session opened and accepted input. I will only mark RDP as working after that check.
 
-A successful prompt is not proof that the session opened. Record the outcome after confirming that the desktop is visible and controllable. Restrict RDP to the lab network and authorized users.
+## Keeping the lab safe
 
-## 6. Wazuh SIEM
-
-Wazuh is the intended security-monitoring platform. The dashboard was accessed, but the current documentation does not yet confirm a working endpoint-to-dashboard pipeline.
-
-The next evidence should include:
-- Where Wazuh manager, indexer, and dashboard are running.
-- Agent installation/enrollment status.
-- Endpoint last-seen/active status.
-- A harmless generated event and the matching event in the dashboard.
-- A validated alert, with rule details and timestamp.
-
-## 7. Credentials and Secrets
-
-- Do not place account passwords, SSH private keys, Wazuh enrollment secrets, API tokens, or recovery codes in this repository.
+- Do not commit passwords, SSH private keys, Wazuh enrollment secrets or API tokens.
 - Use unique passwords for lab accounts.
-- Prefer SSH keys for ongoing administration once the workflow is understood and tested.
-- Keep SIEM and remote administration services on the private lab network.
-- If a secret is accidentally committed, rotate it; deleting it from the latest file does not remove it from Git history.
+- Keep remote administration and monitoring services on the intended lab network.
+- If a secret is accidentally published, rotate it; deleting it from the latest file does not remove it from Git history.
