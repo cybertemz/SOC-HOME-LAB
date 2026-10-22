@@ -1,38 +1,30 @@
-# Lessons Learned
-## Notes from Building the SOC Home Lab
+# What I've Learned So Far
 
-## 1. Verify Before Expanding
+## Take one step at a time
 
-The lab was built in stages: Ubuntu installation, SSH access, Windows VM creation, RDP initiation, and Wazuh dashboard access. Keeping the stages separate makes it easier to identify which layer needs attention.
+I built the lab in stages: installing Ubuntu, connecting over SSH, creating the Windows VM, trying RDP and accessing Wazuh. Checking each stage separately makes it easier to see where a problem starts.
 
-## 2. Remote Access and Monitoring Are Different
+## Remote access and monitoring are different
 
-A successful SSH session proves that remote administration works for that path. It does not prove that system events are collected by a SIEM. Similarly, reaching the RDP credential prompt does not prove that the desktop session succeeds.
+A working SSH session means I can reach the Ubuntu shell through that connection. It doesn't mean Wazuh is collecting events. In the same way, reaching the RDP credentials prompt doesn't prove that a remote desktop session has opened.
 
-Each workflow needs its own success criteria.
+Each part needs its own test.
 
-## 3. A Dashboard Is Not the Same as an End-to-End SIEM
+## Dashboard access is only the beginning
 
-Accessing the Wazuh dashboard confirms initial access to the interface. A functioning monitoring pipeline also requires healthy backend components, an enrolled agent, event transmission, searchable events, and validated detections.
+I learned that being able to open the Wazuh dashboard is not enough to prove that the full monitoring setup works. I also need a connected agent, configured event collection, searchable event data and evidence for any detection I describe.
 
-## 4. Document the Evidence
+## Keep notes tied to evidence
 
-For each milestone, keep a concise record of:
-- What was configured.
-- The exact command or UI path used, with secrets omitted.
-- The expected result.
-- The actual result.
-- Any unresolved issue.
-- The next step.
+When I document a step, I want to record what I did, what result I saw and what still needs checking. Screenshots help, but the caption should explain what is visible instead of claiming more than the image proves.
 
-Screenshots can help, but they should be cropped or redacted to avoid publishing credentials, tokens, private addresses, or other sensitive information.
+## What I want to do next
 
-## 5. Improvements to Make Next
+- Confirm the VMware network mode I'm using.
+- Finish testing RDP.
+- Check the Wazuh component and service status.
+- Find a harmless Windows or Sysmon event in Wazuh.
+- Review a related alert if one is generated and explain what it means.
+- Keep the project README updated as I verify each stage.
 
-- Confirm and document the VMware network mode.
-- Finish RDP verification.
-- Record the Wazuh component topology and service health.
-- Enroll the Windows endpoint and validate a test event.
-- Build a small, evidence-based detection exercise.
-- Add an incident investigation example after event collection is working.
-- Keep the README status table synchronized with verified progress.
+I'm still learning, and I want this repository to show that process honestly rather than make the lab look more complete than it is.
