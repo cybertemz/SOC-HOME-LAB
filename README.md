@@ -67,6 +67,38 @@ I have confirmed that Sysmon is recording events locally and that the Windows an
 
 This image is included as Ubuntu agent-service evidence. The service status should be read from the terminal output shown in the screenshot; the dashboard's **Active** status alone only confirms the agent connection.
 
+## File Integrity Monitoring (FIM) on Windows
+
+I also practised File Integrity Monitoring using the Windows 10 Pro VM and its Wazuh agent. FIM helps me see when monitored files change, which is useful when checking for unexpected edits or deletions.
+
+### What I configured and tested
+
+I reviewed the Windows agent's `ossec.conf` file and worked in the `<syscheck>` section. The configuration shown below includes a scheduled scan frequency of `43200` seconds (12 hours) and selected directories configured for real-time monitoring.
+
+For the practical test, I edited and deleted a text file that I had created on the Windows endpoint. I then checked the Wazuh dashboard for the resulting events.
+
+**Evidence — file modification and deletion events**
+
+![Wazuh FIM events showing a modified file and a deleted file](./Screenshot%202026-10-27%20202009.png)
+
+The dashboard shows a **modified** event with the description “Integrity checksum changed” and a **deleted** event with the description “File deleted.” These are the events I used to confirm that Wazuh recorded the file changes in this lab.
+
+**Evidence — Windows Syscheck configuration**
+
+![Windows ossec.conf Syscheck configuration](./Screenshot%202026-10-27%20203056.png)
+
+This screenshot shows the Syscheck configuration I reviewed, including the scan frequency, selected monitored directories, and file exclusions. The directories listed in the configuration determine which paths are monitored.
+
+### What I learned from this exercise
+
+- FIM can help identify changes to files on an endpoint.
+- The Wazuh agent uses Syscheck settings in `ossec.conf` to determine what to monitor.
+- Editing a file can change its integrity checksum, while deleting a monitored file can generate a deletion event.
+- The dashboard gives me a place to review these events and use their timestamps and file paths during an investigation.
+- Monitoring only covers the files and directories selected in the configuration, so I need to check those settings when testing detection.
+
+This was a hands-on exercise in my own lab, following the workflow I learned from my instructor. It helped me connect the configuration on the Windows endpoint with the file-change events shown in Wazuh.
+
 ## Lab layout
 
 | Component | What it does in my lab |
