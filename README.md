@@ -1,7 +1,6 @@
 # SOC Home Lab: Wazuh, Windows and Ubuntu
 
 ## Why I built this lab
-
 I set up this lab to learn how a SOC analyst gets visibility into activity on computers and uses that information to investigate what is happening. I wanted to understand how the pieces work together, not just install the tools and move on.
 
 The lab runs in VMware Workstation on my Windows host. I have a Ubuntu VM running the Wazuh server, a Windows 10 Pro VM with the Wazuh agent and Sysmon, and a separate Ubuntu VM with the Wazuh agent.
@@ -9,19 +8,17 @@ The lab runs in VMware Workstation on my Windows host. I have a Ubuntu VM runnin
 ## How the tools work together
 
 ### Wazuh
-
 Wazuh is the SIEM I am using for this project. It brings endpoint data into one place so I can check which agents are connected, search collected events, and review alerts. The manager analyses incoming data using its decoders and rules. An alert is something to investigate; it is not proof by itself that an attack happened.
 
 I checked the Wazuh manager service on the Ubuntu server and saw that it was running. In the dashboard, my Windows and Ubuntu agents were also shown as **Active**.
 
-**Evidence — Wazuh manager service**
+**Evidence — Wazuh Manager service**
 
 ![Wazuh Manager service status](./wazuhmanager%20status.png)
 
 This terminal screenshot shows the manager service status at the time I checked it.
 
 ### Wazuh agents
-
 I installed the Wazuh agent on my Windows endpoint and on a separate Ubuntu endpoint. The agents are the link between those machines and the Wazuh server. What Wazuh can see depends on which log sources and collection settings are configured.
 
 **Evidence — agent status in the dashboard**
@@ -31,7 +28,6 @@ I installed the Wazuh agent on my Windows endpoint and on a separate Ubuntu endp
 Both agents appear as **Active** in this screenshot. That tells me they are connected to the manager; it does not prove that every event source is being collected correctly.
 
 ### Sysmon on Windows
-
 Sysmon is a Windows tool that records detailed system activity in the Windows Event Log. It is useful when I need more context about what happened on a machine. Sysmon records events; it does not decide on its own whether an activity is malicious.
 
 Some common Sysmon event types are:
@@ -50,7 +46,6 @@ The events available depend on the Sysmon configuration. In my Windows Event Vie
 This is evidence that Sysmon is recording events locally on the Windows VM.
 
 ### How Sysmon data gets to Wazuh
-
 The path I am working to verify is:
 
 1. Sysmon records selected activity in the **Microsoft-Windows-Sysmon/Operational** event channel.
@@ -68,11 +63,9 @@ I have confirmed that Sysmon is recording events locally and that the Windows an
 This image is included as Ubuntu agent-service evidence. The service status should be read from the terminal output shown in the screenshot; the dashboard's **Active** status alone only confirms the agent connection.
 
 ## File Integrity Monitoring (FIM) on Windows
-
 I also practised File Integrity Monitoring using the Windows 10 Pro VM and its Wazuh agent. FIM helps me see when monitored files change, which is useful when checking for unexpected edits or deletions.
 
 ### What I configured and tested
-
 I reviewed the Windows agent's `ossec.conf` file and worked in the `<syscheck>` section. The configuration shown below includes a scheduled scan frequency of `43200` seconds (12 hours) and selected directories configured for real-time monitoring.
 
 For the practical test, I edited and deleted a text file that I had created on the Windows endpoint. I then checked the Wazuh dashboard for the resulting events.
@@ -90,7 +83,6 @@ The dashboard shows a **modified** event with the description “Integrity check
 This screenshot shows the Syscheck configuration I reviewed, including the scan frequency, selected monitored directories, and file exclusions. The directories listed in the configuration determine which paths are monitored.
 
 ### What I learned from this exercise
-
 - FIM can help identify changes to files on an endpoint.
 - The Wazuh agent uses Syscheck settings in `ossec.conf` to determine what to monitor.
 - Editing a file can change its integrity checksum, while deleting a monitored file can generate a deletion event.
@@ -98,6 +90,11 @@ This screenshot shows the Syscheck configuration I reviewed, including the scan 
 - Monitoring only covers the files and directories selected in the configuration, so I need to check those settings when testing detection.
 
 This was a hands-on exercise in my own lab, following the workflow I learned from my instructor. It helped me connect the configuration on the Windows endpoint with the file-change events shown in Wazuh.
+
+### Additional FIM evidence: hash and change monitoring
+I added a separate practical note documenting the newer FIM screenshots, including the checksum-change alert, Windows Registry events, and the monitored file's MD5, SHA-1, and SHA-256 details.
+
+See [File Integrity Monitoring: File Hash and Change Detection](./docs/FILE-INTEGRITY-MONITORING.md).
 
 ## Lab layout
 
@@ -112,7 +109,6 @@ This was a hands-on exercise in my own lab, following the workflow I learned fro
 | Windows Event Viewer | Lets me inspect Sysmon events recorded on Windows |
 
 ## What I have learned so far
-
 This project has helped me see that installing a SIEM is only the beginning. The event source has to record useful information, the agent has to collect it, and the server has to receive it before I can investigate it in the dashboard. An agent showing as Active is a good first check, but it is not the same as proving that a particular event made it all the way through.
 
 My next steps are to check the Windows agent's Sysmon channel configuration, find a harmless test event, and search for that event in Wazuh. I also want to check whether Wazuh creates an alert for it and understand which rule caused that result.
@@ -120,13 +116,11 @@ My next steps are to check the Windows agent's Sysmon channel configuration, fin
 This is a practice lab, so I am documenting what I have checked and keeping the remaining tests clear rather than marking them as completed before I have evidence.
 
 ## Security notes
-
 - I do not include passwords or private keys in this repository.
 - I avoid exposing SSH, RDP or the Wazuh dashboard directly to the public internet.
 - I check screenshots for sensitive information before publishing them.
 
 ## Project notes
-
 - [Project overview](docs/PROJECT-OVERVIEW.md)
 - [Deployment notes](docs/DEPLOYMENT.md)
 - [Wazuh agent deployment](docs/WAZUH-AGENT-DEPLOYMENT.md)
