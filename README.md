@@ -1,5 +1,11 @@
 # SOC Home Lab: Wazuh, Windows and Ubuntu
 
+## Recent lab work: SSH authentication investigation
+
+I also tested how failed SSH logins appear in Wazuh. I made repeated unsuccessful login attempts against my own Ubuntu VM from a separate device in my lab, then used Discover to filter the Ubuntu agent's authentication logs and inspect the matching records.
+
+The screenshot and investigation notes are here: [SSH Authentication Log Monitoring and Investigation](./docs/SSH-AUTHENTICATION-LOG-INVESTIGATION.md).
+
 ## Why I built this lab
 I set up this lab to learn how a SOC analyst gets visibility into activity on computers and uses that information to investigate what is happening. I wanted to understand how the pieces work together, not just install the tools and move on.
 
@@ -129,3 +135,4 @@ This is a practice lab, so I am documenting what I have checked and keeping the 
 - [Components](docs/COMPONENTS.md)
 - [Troubleshooting](docs/TROUBLESHOOTING.md)
 - [Lessons learned](docs/LESSONS-LEARNED.md)
+- [SSH authentication log investigation](docs/SSH-AUTHENTICATION-LOG-INVESTIGATION.md)
