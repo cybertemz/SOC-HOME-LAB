@@ -2,36 +2,36 @@
 
 ## What I tested
 
-I wanted to see what happens in Wazuh when someone makes unsuccessful SSH login attempts against my Ubuntu endpoint. From a separate device in my own lab, I made repeated SSH login attempts using an incorrect password. I did this as a controlled test so I could see whether the Ubuntu system recorded the activity and whether it appeared in Wazuh.
+I wanted to check whether Wazuh would record failed SSH logins on my Ubuntu endpoint and make those events easy to find. I used a second device in my lab to make repeated SSH login attempts with an incorrect password. This was a controlled, brute-force-style test against my own VM, not a test against somebody else's system.
 
 ## What I checked in Wazuh
 
-In the Wazuh **Discover** page, I selected the `wazuh-archives*` index and filtered the events for the `ubuntu-agent` endpoint. I narrowed the search to the authentication events and reviewed the matching records.
+After the test, I opened **Discover** in the Wazuh dashboard, selected the `wazuh-archives*` index, and filtered the results for `ubuntu-agent` and authentication activity.
 
-The screenshot shows **2 matching events** in the selected time range. In the event details, the `full_log` field contains an SSH/PAM message reporting additional authentication failures. This is the evidence I used to confirm that the failed login activity was being recorded and was searchable in Wazuh.
+The screenshot shows **2 matching events** in the selected time range. I opened the event details and checked the agent information, SSH decoder, and original log message. The `full_log` field contains a PAM message reporting additional authentication failures. That gave me evidence that the failed login activity from my test was reaching the Ubuntu logs and was searchable in Wazuh.
 
-![Wazuh Discover showing SSH authentication failure logs for the Ubuntu agent](../Screenshot%202026-11-05%20054022.png)
+![Wazuh Discover showing Linux SSH authentication log events](../LINUX%20Log%20Monitoring.png)
 
 ## What the result tells me
 
-The test showed me how failed SSH logins can be investigated from a central dashboard instead of checking the endpoint log manually each time. The useful details include the agent name, event timestamp, decoder, and the original log message.
+This exercise helped me follow an activity from a separate device through to the logs collected from my Ubuntu endpoint. Instead of relying only on the terminal, I could use Wazuh Discover to filter the records and inspect the original message.
 
-A few failed logins do not automatically prove that a brute-force attack is taking place. In this lab, I generated the attempts deliberately from a second device. In a real environment, I would look at the source address, number and frequency of failures, usernames being tried, whether a successful login followed, and any other activity from the same source before deciding how serious it is.
+The two matching events and the PAM message are evidence of authentication failures. They do not, on their own, prove that a real attacker carried out a brute-force attack or that Wazuh generated a brute-force alert. For a proper investigation, I would also check the source IP, the usernames being attempted, the timing and frequency of the failures, whether any login succeeded afterwards, and whether a Wazuh alert was generated.
 
-## Investigation steps I followed
+## Steps I followed
 
-1. Generated repeated unsuccessful SSH login attempts from a separate device in my lab.
+1. Used a second device in my lab to make repeated unsuccessful SSH login attempts against my Ubuntu VM.
 2. Opened Wazuh Discover and selected the archive events.
-3. Filtered the results to the Ubuntu agent.
-4. Reviewed the authentication records and opened the event details.
-5. Checked the timestamp and original `full_log` message to understand what the event represented.
+3. Filtered the results for the Ubuntu agent and authentication activity.
+4. Opened the matching records and reviewed the agent, decoder, timestamp, and original log message.
+5. Used the event details to confirm what the records were reporting.
 
 ## What I learned
 
-This exercise helped me connect an action on an endpoint with the logs collected by a SIEM. I also got more practice filtering events and reading the original log message instead of relying only on the event count.
+I got a better understanding of how Linux authentication activity can be collected and reviewed centrally. I also practised filtering events in Wazuh and reading the original log message instead of making a decision based only on the event count.
 
-My next step is to run a longer controlled test and compare the event timestamps and source details. I also want to check whether the activity triggers a Wazuh alert under the rules enabled in my lab. The screenshot in this note is evidence of searchable authentication-failure events; it is not, by itself, evidence that Wazuh raised a brute-force alert.
+My next step is to repeat the test while recording the source address and timing, then check whether the rules enabled in my lab generate an alert for that pattern. I will keep the difference clear between an event being collected and an alert being triggered.
 
 ## Lab safety
 
-I carried out this test only against my own Ubuntu virtual machine in my private lab. I did not test against public systems or devices I do not own or have permission to assess.
+I performed this test only against my own Ubuntu virtual machine in my private lab, using a second device I control. I did not target public systems or devices I do not have permission to test.
